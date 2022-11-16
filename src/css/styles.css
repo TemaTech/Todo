@@ -55,6 +55,27 @@ body {
   cursor: pointer;
 }
 
+@-webkit-keyframes sidemenuShow {
+  from {
+    -webkit-clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
+            clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
+  }
+  to {
+    -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+  }
+}
+
+@keyframes sidemenuShow {
+  from {
+    -webkit-clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
+            clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
+  }
+  to {
+    -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+  }
+}
 .sidemenu {
   background: #f5f5f5;
   display: flex;
@@ -63,6 +84,12 @@ body {
   align-items: center;
   justify-content: flex-start;
   padding: 10px;
+  -webkit-animation-duration: 0.4s;
+          animation-duration: 0.4s;
+}
+
+.sidemenu-show {
+  display: none !important;
 }
 
 .side-def-tasks {
@@ -86,7 +113,7 @@ body {
 }
 
 .side-def:hover {
-  cursor: pointer;
+  cursor: default;
   background-color: #ffffff;
 }
 
@@ -158,8 +185,26 @@ body {
 }
 
 .project:hover {
-  cursor: pointer;
+  cursor: default;
   background-color: #ffffff;
+}
+
+.project button {
+  border: none;
+  outline: none;
+  height: 15px;
+  width: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.project button img {
+  content: url("/src/img/square-minus-regular.svg");
+}
+
+.project button:hover {
+  cursor: pointer;
 }
 
 .display-color {
@@ -180,8 +225,319 @@ body {
 }
 
 .add-project-popUp {
-  width: 400px;
-  height: 300px;
+  width: 300px;
+  height: 220px;
   background: #ffffff;
   border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
+.addProjectPopUp-header {
+  width: 100%;
+  padding: 5px;
+  padding-left: 10px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #bdbdbd;
+}
+
+.addProjectPopUp-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 10px;
+}
+
+.addProjectPopUp-body div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.addProjectPopUp-body div label {
+  color: #919191;
+}
+
+.addProjectPopUp-body div input,
+.addProjectPopUp-body div select {
+  outline: none;
+  border: none;
+  border-bottom: 1px solid #919191;
+}
+
+.addProjectPopUp-footer {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  border-top: 1px solid #bdbdbd;
+  padding: 5px;
+  padding-right: 10px;
+  justify-content: flex-end;
+}
+
+.addProjectPopUp-footer button:first-of-type {
+  outline: none;
+  border: none;
+  padding: 4px;
+  border-radius: 3px;
+  background: #bdbdbd;
+  color: #393939;
+}
+
+.addProjectPopUp-footer button:last-of-type {
+  outline: none;
+  border: none;
+  padding: 4px;
+  border-radius: 3px;
+  background: #e74c3c;
+  color: #ffffff;
+}
+
+.addProjectPopUp-footer button:hover {
+  cursor: pointer;
+}
+
+.body {
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.empty {
+  border: 1px solid red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #919191;
+  flex-direction: column;
+}
+
+.body-control {
+  padding: 15px;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+}
+
+.body-control button {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.body-control button:hover {
+  background: #f5f5f5;
+  cursor: pointer;
+}
+
+.body-control button img {
+  content: url("/src/img/circle-plus-solid.svg");
+  height: 15px;
+  width: 15px;
+}
+
+.body-control button p {
+  color: #e74c3c;
+}
+
+.body-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 15px;
+  padding-left: 10vw;
+  padding-right: 10vw;
+}
+
+.task {
+  display: grid;
+  width: 100%;
+  background: #f5f5f5;
+  box-shadow: rgba(165, 149, 149, 0.2) 0px 8px 24px;
+  border-radius: 15px;
+  grid-template-columns: auto auto auto 1fr auto;
+  grid-template-rows: repeat(2, auto);
+  padding: 15px;
+  gap: 5px;
+  -moz-column-gap: 20px;
+       column-gap: 20px;
+}
+
+.display-priority {
+  grid-column: 1;
+  grid-row: span 2;
+  width: 10px;
+  height: 100%;
+  border-radius: 5px;
+}
+
+.task input[type=checkbox] {
+  width: 20px;
+  height: 20px;
+  align-self: center;
+  /* Add if not using autoprefixer */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+       appearance: none;
+  /* For iOS < 15 to remove gradient background */
+  background-color: #fff;
+  /* Not removed via appearance */
+  margin: 0;
+  border-radius: 5px;
+  border: 2px solid #393939;
+  content: "";
+  display: grid;
+  place-content: center;
+}
+
+.task input[type=checkbox]::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: #393939;
+  transform: scale(0);
+}
+
+.task input[type=checkbox]:hover {
+  cursor: pointer;
+}
+
+.task input[type=checkbox]:checked::before {
+  transform: scale(1);
+}
+
+.task p {
+  align-self: center;
+  grid-column: 4;
+  color: #919191;
+}
+
+.displayDueDate {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+button.remove-task-button {
+  padding: 5px;
+  outline: none;
+  border: none;
+  background: none;
+}
+
+button.remove-task-button:hover {
+  cursor: pointer;
+}
+
+.remove-task-button img {
+  content: url("/src/img/trash-solid.svg");
+  height: 25px;
+  width: 25px;
+}
+
+.title-lineThrough {
+  text-decoration: line-through;
+  color: #919191;
+}
+
+.new-task-input {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  grid-template-rows: repeat(3, auto);
+  gap: 5px;
+  border-radius: 10px;
+  padding: 15px;
+  width: 40vw;
+}
+
+.new-task-input input[type=text],
+.new-task-input textarea {
+  padding: 10px;
+  border: none;
+  outline: none;
+  background: none;
+  font-size: 1rem;
+}
+
+.new-task-input input[type=text] {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.new-task-input textarea {
+  resize: none;
+  height: 100px;
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.new-task-input input[type=date],
+.new-task-input select {
+  border: 1px solid #919191;
+  color: #919191;
+  border-radius: 5px;
+  padding: 4px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.new-task-input input[type=date] {
+  grid-column: 2;
+  grid-row: 1;
+  width: 150px;
+  height: 50px;
+}
+
+.new-task-input select {
+  grid-column: 2;
+  grid-row: 2;
+  width: 150px;
+  height: 50px;
+}
+
+.new-task-input div {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.new-task-input div button {
+  font-size: 1rem;
+}
+
+.new-task-input div button:first-of-type {
+  background: #f5f5f5;
+}
+
+.new-task-input div button:first-of-type:hover {
+  cursor: pointer;
+  background: #f5f5f5;
+}
+
+.new-task-input div button:last-of-type {
+  background: #e74c3c;
+  color: white;
+}
+
+.new-task-input div button:last-of-type:hover {
+  background: #e74c3c;
+  cursor: pointer;
 }/*# sourceMappingURL=styles.css.map */

@@ -28,5 +28,8 @@
     "webpack-cli": "^4.10.0",
     "xml-loader": "^1.2.1",
     "yamljs": "^0.3.0"
+  },
+  "dependencies": {
+    "date-fns": "^2.29.3"
   }
 }
