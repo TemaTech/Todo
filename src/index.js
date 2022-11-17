@@ -1,5 +1,6 @@
 import './css/styles.css';
 
+
 // Hide side menu
 const hideShowSideMenu = (() => {
     const button = document.querySelector('.nav-right button');
@@ -40,56 +41,36 @@ const renderAddProject = (() => {
         header.appendChild(headerText);
         popUp.appendChild(header);
 
-        const body = document.createElement('div');
-        body.classList = 'addProjectPopUp-body';
-        const name = document.createElement('div');
-        const nLabel = document.createElement('label');
-        nLabel.textContent = 'Name';
-        name.appendChild(nLabel);
-        const nameInput = document.createElement('input');
-        name.appendChild(nameInput);
-        body.appendChild(name);
-        const color = document.createElement('div');
-        const cLabel = document.createElement('label');
-        cLabel.textContent = 'Color';
-        color.appendChild(cLabel);
-        const colorSelect = document.createElement('select');
+        const form = document.createElement('form');
+        const name = document.createElement('input');
+        name.setAttribute('required', 'true');
+        name.setAttribute('placeholder', 'Project name...');
+        form.appendChild(name);
+        const selectColor = document.createElement('select');
         const red = document.createElement('option');
-        red.setAttribute('value', '#e74c3c');
         red.textContent = 'Red';
-        colorSelect.appendChild(red);
-        const gray = document.createElement('option');
-        gray.setAttribute('value', '#393939');
-        gray.textContent = 'Gray';
-        colorSelect.appendChild(gray);
+        red.setAttribute('value', '#e74c3c');
+        selectColor.appendChild(red);
         const violet = document.createElement('option');
-        violet.setAttribute('value', '#b700ff');
         violet.textContent = 'Violet';
-        colorSelect.appendChild(violet);
-        color.appendChild(colorSelect)
-        body.appendChild(color);
-        popUp.appendChild(body);
-
-        const footer = document.createElement('div');
-        footer.classList = 'addProjectPopUp-footer';
-        const closeButton = document.createElement('button');
-        closeButton.textContent = 'Cancel';
-        closeButton.addEventListener('click', () => {
+        violet.setAttribute('value', '#b700ff');
+        selectColor.appendChild(violet);
+        form.appendChild(selectColor);
+        const cancelButton = document.createElement('button');
+        cancelButton.textContent = 'Cancel';
+        cancelButton.addEventListener('click', () => {
             container.innerHTML = '';
             container.classList.remove('pop-up-bg');
-        });
-        footer.appendChild(closeButton);
+        })
+        form.appendChild(cancelButton);
         const addButton = document.createElement('button');
-        addButton.textContent = 'Add';
-        addButton.addEventListener('click', () => {
-            // Function for this button
-            console.log('Added!');
-            // Remove pop up
-            container.innerHTML = '';
-            container.classList.remove('pop-up-bg');
-        });
-        footer.appendChild(addButton);
-        popUp.appendChild(footer);
+        addButton.textContent = '+ Add';
+        addButton.setAttribute('type', 'submit');
+        addButton.addEventListener('submit', () => {
+            
+        })
+        form.appendChild(addButton)
+        popUp.appendChild(form);
 
         container.appendChild(popUp);
     }
@@ -228,49 +209,73 @@ const renderNewTaskInput = (() => {
     const button = document.querySelector('.body-control button');
 
     function render() {
+        button.disabled = true;
         const content = document.querySelector('.body-control');
 
-        const form = document.createElement('div');
-        form.classList = 'new-task-input';
+        const form = document.createElement('form');
+        form.setAttribute('method', 'post');
+
+
+        const field1 = document.createElement('fieldset');
+        field1.classList = 'first-field';
+
         const title = document.createElement('input');
-        title.setAttribute('type', 'text');
-        title.setAttribute('placeholder', 'Title: for example "Take a walk with my dog"');
-        form.appendChild(title);
+        title.setAttribute("required", "true");
+        title.setAttribute("placeholder", "Title of this task");
+        field1.appendChild(title);
+
         const description = document.createElement('textarea');
-        description.setAttribute('placeholder', 'Description: for example "Take my dog for a walk to Central Park. Then return home."');
-        form.appendChild(description);
-        const date = document.createElement('input');
-        date.setAttribute('type', 'date');
-        form.appendChild(date);
+        description.setAttribute("placeholder", "Description of this task");
+        field1.appendChild(description);
+
+        form.appendChild(field1);
+
+
+        const field2 = document.createElement('fieldset');
+        field2.classList = 'second-field';
+
+        const dueDate = document.createElement('input');
+        dueDate.setAttribute("type", "date");
+        dueDate.setAttribute("required", "true");
+        field2.appendChild(dueDate);
+
         const priority = document.createElement('select');
-        const light = document.createElement('option');
-        light.textContent = 'Light';
-        light.setAttribute('value', 'light');
-        priority.appendChild(light);
+        const high = document.createElement('option');
+        high.setAttribute("value", "high");
+        high.textContent = "High";
+        priority.appendChild(high);
         const mild = document.createElement('option');
         mild.textContent = 'Mild';
         mild.setAttribute('value', 'mild');
         priority.appendChild(mild);
-        const important = document.createElement('option');
-        important.textContent = 'Important';
-        important.setAttribute('value', 'important');
-        priority.appendChild(important);
-        form.appendChild(priority);
+        const low = document.createElement('option');
+        low.setAttribute('value', 'low');
+        low.textContent = 'Low';
+        priority.appendChild(low);
+        field2.appendChild(priority);
+
+        form.appendChild(field2);
+
         const buttons = document.createElement('div');
         const cancel = document.createElement('button');
+        cancel.setAttribute('id', 'form-cancel');
         cancel.textContent = 'Cancel';
         cancel.addEventListener('click', () => {
             content.removeChild(form);
+            button.disabled = false;
         })
         buttons.appendChild(cancel);
+
         const add = document.createElement('button');
-        add.textContent = 'Add';
-        add.addEventListener('click', () => {
-            console.log('Added!');
-            content.removeChild(form);
-        });
+        add.setAttribute('type', 'submit');
+        add.setAttribute('id', 'form-submit');
+        add.textContent = '+ Add';
+        add.addEventListener('submit', () => {
+            console.table(form.dataset)
+        })
         buttons.appendChild(add);
         form.appendChild(buttons);
+
         content.appendChild(form);
     }
 
