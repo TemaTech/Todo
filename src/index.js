@@ -1,4 +1,5 @@
 import './css/styles.css';
+import { projects } from './js/projects';
 
 
 // Hide side menu
@@ -55,19 +56,33 @@ const renderAddProject = (() => {
         violet.textContent = 'Violet';
         violet.setAttribute('value', '#b700ff');
         selectColor.appendChild(violet);
+        const green = document.createElement('option');
+        green.textContent = 'Green';
+        green.setAttribute('value', '#00ff00');
+        selectColor.appendChild(green);
+        const blue = document.createElement('option');
+        blue.textContent = 'Blue';
+        blue.setAttribute('value', '#0066ff');
+        selectColor.appendChild(blue);
+        const yellow = document.createElement('option');
+        yellow.textContent = 'Yellow';
+        yellow.setAttribute('value', '#ffff00');
+        selectColor.appendChild(yellow);
         form.appendChild(selectColor);
         const cancelButton = document.createElement('button');
         cancelButton.textContent = 'Cancel';
         cancelButton.addEventListener('click', () => {
-            container.innerHTML = '';
-            container.classList.remove('pop-up-bg');
+            location.reload();
         })
         form.appendChild(cancelButton);
         const addButton = document.createElement('button');
         addButton.textContent = '+ Add';
-        addButton.setAttribute('type', 'submit');
-        addButton.addEventListener('submit', () => {
-            
+        addButton.setAttribute('type', 'button');
+        addButton.addEventListener('click', () => {
+            if (name.value != '') {
+                projects.createNewProject(name.value, selectColor.value)
+                location.reload();
+            }
         })
         form.appendChild(addButton)
         popUp.appendChild(form);
@@ -81,11 +96,12 @@ const renderAddProject = (() => {
 })();
 
 // Render user projects on the side menu
-const renderProjects = (() => {
+export const renderProjects = (() => {
     const container = document.querySelector('.projects');
 
-    function renderProject(name, color) {
+    function renderProject(name, color, id, numOfTasks) {
         const project = document.createElement('div');
+        project.setAttribute('id', id);
         project.classList = 'project';
         const colorDisplay = document.createElement('div');
         colorDisplay.classList = 'display-color';
@@ -95,25 +111,29 @@ const renderProjects = (() => {
         nameDisplay.textContent = name;
         project.appendChild(nameDisplay);
         const span = document.createElement('span');
-        span.textContent = '0';
+        span.textContent = numOfTasks;
         project.appendChild(span);
         const rmButton = document.createElement('button');
         const buttonImg = document.createElement('img');
         rmButton.appendChild(buttonImg);
         rmButton.addEventListener('click', () => {
-            container.removeChild(project);
+            projects.removeProject(id);
+            location.reload();
         })
         project.appendChild(rmButton);
         container.appendChild(project);
     };
 
-    renderProject("Hello world", "#b700ff");
-    renderProject("Chernysh", "#393939");
-    renderProject("Artem", "#e74c3c");
+    for(let i in storage.getProjects()) {
+        renderProject(storage.getProjects()[i].title, storage.getProjects()[i].color, i, storage.getProjects()[i].tasks.length);
+    }
+
+    return { renderProject };
 })();
 
 // Import date-fns
 import { format } from 'date-fns';
+import { storage } from './js/storage';
 
 // Render tasks
 const renderTasks = (() => {

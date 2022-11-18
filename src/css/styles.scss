@@ -219,15 +219,14 @@ body {
 }
 
 .add-project-popUp {
-    width: 300px;
-    height: 220px;
     background: $bg-light;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
+    gap: 15px;
 }
 
 .addProjectPopUp-header {
@@ -236,6 +235,7 @@ body {
     padding-left: 10px;
     background: $bg-darker;
     border-bottom: 1px solid $gray;
+    place-self: top;
 }
 
 
@@ -461,14 +461,70 @@ button.remove-task-button:hover {
 }
 
 .body-control form button:last-of-type {
-    background: $accent;
     grid-row: 3;
+    border: 2px solid $accent;
+    background: none;
+    color: $accent;
 }
 
-.body-control form button:last-of-type {
-    display: inline-block;
+.body-control form button:last-of-type:hover {
+    background: rgb(255, 245, 245);
+}
+
+.body-control form button:first-of-type {
+    background: none;
+    border: 2px solid $font-dark;
+    color: $font-dark;
 }
 
 .body-control form button:first-of-type:hover {
-    background: $font-dark;
+    background: rgb(231, 231, 231);
+}
+
+
+.add-project-popUp form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    place-content: center;
+    gap: 10px;
+    padding: 10px;
+}
+
+.add-project-popUp form input {
+    border: none;
+    outline: none;
+    background: none;
+    font-size: 1rem;
+}
+
+.add-project-popUp form select {
+    outline: none;
+    border: 1px solid $font-dark;
+    border-radius: 5px;
+}
+
+.add-project-popUp form button:first-of-type {
+    background: none;
+    border: 2px solid $font-dark;
+    color: $font-dark;
+    border-radius: 5px;
+    width: 70px;
+}
+
+.add-project-popUp form button:first-of-type:hover {
+    background: rgb(231, 231, 231);
+    cursor: pointer;
+}
+
+.add-project-popUp form button:last-of-type {
+    border: 2px solid $accent;
+    background: none;
+    color: $accent;
+    border-radius: 5px;
+}
+
+.add-project-popUp form button:last-of-type:hover {
+    background: rgb(255, 245, 245);
+    cursor: pointer;
 }
