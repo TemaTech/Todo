@@ -11,12 +11,15 @@ const projects = (() => {
     
     function createNewProject(title, color) {
         const newProject = projectFactory(title, color);
-        storage.tempProjectsStorage.push(newProject);
+        storage.projectsStorage.push(newProject);
         storage.saveProjects();
     }
 
     function removeProject(id) {
-        console.table();
+        const array = storage.getProjects();
+        array.splice(array.indexOf(array[id]), 1);
+        localStorage.setItem('projects', JSON.stringify(array));
+        location.reload();
     }
 
     return { createNewProject, removeProject };

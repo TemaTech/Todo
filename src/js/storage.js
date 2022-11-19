@@ -9,10 +9,10 @@ const storage = (() => {
         } 
     }
 
-    let tempProjectsStorage = isEmpty();
+    let projectsStorage = isEmpty();
 
     function saveProjects() {
-        localStorage.setItem('projects', JSON.stringify(tempProjectsStorage));
+        localStorage.setItem('projects', JSON.stringify(projectsStorage));
     }
 
     function getProjects() {
@@ -21,7 +21,7 @@ const storage = (() => {
     }
 
 
-    return { tempProjectsStorage, saveProjects, getProjects };
+    return { projectsStorage, saveProjects, getProjects };
 })();
 
 

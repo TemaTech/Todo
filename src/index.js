@@ -101,6 +101,10 @@ export const renderProjects = (() => {
 
     function renderProject(name, color, id, numOfTasks) {
         const project = document.createElement('div');
+        project.addEventListener('click', () => {
+            document.querySelector('.body-control h1').textContent = name;
+
+        })
         project.setAttribute('id', id);
         project.classList = 'project';
         const colorDisplay = document.createElement('div');
@@ -118,7 +122,6 @@ export const renderProjects = (() => {
         rmButton.appendChild(buttonImg);
         rmButton.addEventListener('click', () => {
             projects.removeProject(id);
-            location.reload();
         })
         project.appendChild(rmButton);
         container.appendChild(project);
@@ -134,6 +137,7 @@ export const renderProjects = (() => {
 // Import date-fns
 import { format } from 'date-fns';
 import { storage } from './js/storage';
+import { tasks } from './js/tasks';
 
 // Render tasks
 const renderTasks = (() => {
@@ -221,8 +225,6 @@ const renderTasks = (() => {
 
         container.appendChild(task);
     }
-
-    renderTask('Hello', 'Hello world, I am a task that has been created with JS. I will be used as a test exapmle.', new Date(), 'mild');
 })();
 
 const renderNewTaskInput = (() => {
@@ -233,7 +235,6 @@ const renderNewTaskInput = (() => {
         const content = document.querySelector('.body-control');
 
         const form = document.createElement('form');
-        form.setAttribute('method', 'post');
 
 
         const field1 = document.createElement('fieldset');
@@ -287,11 +288,11 @@ const renderNewTaskInput = (() => {
         buttons.appendChild(cancel);
 
         const add = document.createElement('button');
-        add.setAttribute('type', 'submit');
+        add.setAttribute('type', 'button');
         add.setAttribute('id', 'form-submit');
         add.textContent = '+ Add';
-        add.addEventListener('submit', () => {
-            console.table(form.dataset)
+        add.addEventListener('click', () => {
+            tasks.createNewTask(title.value, description.value, dueDate.value, priority.value);
         })
         buttons.appendChild(add);
         form.appendChild(buttons);
