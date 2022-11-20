@@ -1,4 +1,7 @@
 import './css/styles.css';
+import { format } from 'date-fns';
+import { storage } from './js/storage';
+import { tasks } from './js/tasks';
 import { projects } from './js/projects';
 
 
@@ -101,10 +104,6 @@ export const renderProjects = (() => {
 
     function renderProject(name, color, id, numOfTasks) {
         const project = document.createElement('div');
-        project.addEventListener('click', () => {
-            document.querySelector('.body-control h1').textContent = name;
-
-        })
         project.setAttribute('id', id);
         project.classList = 'project';
         const colorDisplay = document.createElement('div');
@@ -134,26 +133,23 @@ export const renderProjects = (() => {
     return { renderProject };
 })();
 
-// Import date-fns
-import { format } from 'date-fns';
-import { storage } from './js/storage';
-import { tasks } from './js/tasks';
-
 // Render tasks
 const renderTasks = (() => {
     const container = document.querySelector('.body-content');
+    let tasksLocation;
 
-    function renderTask(title, description, dueDate, priority) {
+    function renderTask(title, description, dueDate, priority, id) {
         const task = document.createElement('div');
+        task.setAttribute('id', id);
         task.classList = 'task';
 
         const displayPriority = document.createElement('div');
         displayPriority.classList = 'display-priority';
-        if (priority == 'important') {
+        if (priority == 'high') {
             displayPriority.style.background = '#e74c3c';
         } else if (priority == 'mild') {
             displayPriority.style.background = '#3498db';
-        } else if (priority == 'light') {
+        } else if (priority == 'low') {
             displayPriority.style.background = '#2ecc71';
         } else {
             displayPriority.style.background = '#95a5a6';
@@ -164,6 +160,10 @@ const renderTasks = (() => {
         doneButton.setAttribute('type', 'checkbox');
         doneButton.style.height = '20px';
         doneButton.style.width = '20px';
+        doneButton.addEventListener('change', () => {
+            storage.projectsStorage[tasksLocation].tasks[id].isDone = doneButton.checked;
+            storage.saveProjects();
+        })
         task.appendChild(doneButton);
 
         const displayTitle = document.createElement('h1');
@@ -175,6 +175,8 @@ const renderTasks = (() => {
             } else {
                 doneButton.checked = false;
             }
+            storage.projectsStorage[tasksLocation].tasks[id].isDone = doneButton.checked;
+            storage.saveProjects();
         })
         displayTitle.addEventListener('mouseover', () => {
             displayTitle.style.cursor = 'pointer';
@@ -210,7 +212,7 @@ const renderTasks = (() => {
         const displayDueDate = document.createElement('div');
         displayDueDate.classList = 'displayDueDate';
         const displayDueDateText = document.createElement('p');
-        displayDueDateText.textContent = format(dueDate, 'MMM do, y');
+        displayDueDateText.textContent = dueDate;
         displayDueDate.appendChild(displayDueDateText);
         task.appendChild(displayDueDate);
 
@@ -219,12 +221,25 @@ const renderTasks = (() => {
         const trashCan = document.createElement('img');
         removeButton.appendChild(trashCan);
         removeButton.addEventListener('click', () => {
-            container.removeChild(task);
+            tasks.removeTask(tasksLocation, id);
         })
         task.appendChild(removeButton);
 
         container.appendChild(task);
     }
+
+    const projectButton = document.querySelectorAll('.side-projects .project');
+    projectButton.forEach((button) => {
+        button.addEventListener('click', () => {
+            document.querySelector('.body-control h1').textContent = storage.getProjects()[button.id].title;
+            container.innerHTML = '';
+            const loc = storage.getProjects()[button.id].tasks;
+            for(let i in loc) {
+                renderTask(loc[i].title, loc[i].description, loc[i].dueDate, loc[i].priority, i);
+            }
+            return tasksLocation = button.id;
+        })
+    })
 })();
 
 const renderNewTaskInput = (() => {
@@ -275,6 +290,15 @@ const renderNewTaskInput = (() => {
         priority.appendChild(low);
         field2.appendChild(priority);
 
+        const location = document.createElement('select');
+        for(let i = 0; i < storage.getProjects().length; i++) {
+            const option = document.createElement('option');
+            option.textContent = i + 1 + '. ' + storage.getProjects()[i].title;
+            option.setAttribute('value', i);
+            location.appendChild(option);
+        }
+        field2.appendChild(location);
+
         form.appendChild(field2);
 
         const buttons = document.createElement('div');
@@ -292,7 +316,8 @@ const renderNewTaskInput = (() => {
         add.setAttribute('id', 'form-submit');
         add.textContent = '+ Add';
         add.addEventListener('click', () => {
-            tasks.createNewTask(title.value, description.value, dueDate.value, priority.value);
+            tasks.createNewTask(title.value, description.value, dueDate.value, priority.value, location.value);
+            window.location.reload();
         })
         buttons.appendChild(add);
         form.appendChild(buttons);
@@ -303,4 +328,15 @@ const renderNewTaskInput = (() => {
     button.addEventListener('click', () => {
         render();
     })
+})();
+
+const defaults = (() => {
+    const inboxProject = document.querySelector('#inbox');
+    const todayProject = document.querySelector('#today');
+    const doneProject = document.querySelector('#done');
+    const inboxProjectCounter = document.querySelector('#inbox span')
+    const todayProjectCounter = document.querySelector('#today span');
+    const doneProjectCounter = document.querySelector('#done span');
+
+    
 })();

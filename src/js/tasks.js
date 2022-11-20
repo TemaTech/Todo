@@ -5,18 +5,23 @@ import { storage } from "./storage";
 const tasks = (() => {
 
     function taskFactory(title, description, dueDate, priority) {
-        isDone = false;
+        let isDone = false;
         return { title, description, dueDate, priority, isDone };
     }
 
     function createNewTask(title, description, dueDate, priority, location) {
-        const project = storage.getProjects()[location].tasks;
         const newTask = taskFactory(title, description, dueDate, priority);
-        project.push(newTask);
-        console.log(project);
+        storage.projectsStorage[location].tasks.push(newTask);
+        storage.saveProjects();
     }
 
-    return { createNewTask };
+    function removeTask(location, id) {
+        storage.projectsStorage[location].tasks.splice(storage.projectsStorage[location].tasks.indexOf(storage.projectsStorage[location].tasks[id]), 1);
+        storage.saveProjects();
+    }
+
+    return { createNewTask, removeTask };
+
 })();
 
 
