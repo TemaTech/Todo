@@ -162,8 +162,22 @@ const renderTasks = (() => {
         doneButton.style.height = '20px';
         doneButton.style.width = '20px';
         doneButton.addEventListener('change', () => {
+            console.log(tasksLocation)
+            if (tasksLocation == 'inbox') {
+                storage.inboxStorage[id].isDone = doneButton.checked;
+                storage.saveInbox();
+            } else if (tasksLocation == 'today') {
+                storage.todayStorage[id].isDone = doneButton.checked;
+                storage.saveToday();
+            } else if (tasksLocation == 'done') {
+                storage.doneStorage[id].isDone = doneButton.checked;
+                storage.saveDone();
+                console.log(storage.doneStorage[id].isDone)
+            } else {
             storage.projectsStorage[tasksLocation].tasks[id].isDone = doneButton.checked;
             storage.saveProjects();
+            console.log(storage.projectsStorage[tasksLocation].tasks[id].isDone);
+            }
         })
         task.appendChild(doneButton);
 
@@ -176,8 +190,19 @@ const renderTasks = (() => {
             } else {
                 doneButton.checked = false;
             }
-            storage.projectsStorage[tasksLocation].tasks[id].isDone = doneButton.checked;
-            storage.saveProjects();
+            if (tasksLocation == 'inbox') {
+                    storage.inboxStorage[id].isDone = doneButton.checked;
+                    storage.saveInbox();
+            } else if (tasksLocation == 'today') {
+                    storage.todayStorage[id].isDone = doneButton.checked;
+                    storage.saveToday();
+            } else if (tasksLocation == 'done') {
+                    storage.doneStorage[id].isDone = doneButton.checked;
+                    storage.saveDone();
+            } else {
+                storage.projectsStorage[tasksLocation].tasks[id].isDone = doneButton.checked;
+                storage.saveProjects();
+            }
         })
         displayTitle.addEventListener('mouseover', () => {
             displayTitle.style.cursor = 'pointer';
@@ -230,6 +255,12 @@ const renderTasks = (() => {
     }
 
     const projectButton = document.querySelectorAll('.side-projects .project');
+    const defTasks = document.querySelectorAll('.side-def-tasks .side-def');
+    defTasks.forEach((button) => {
+        button.addEventListener('click', () => {
+            return tasksLocation = button.id;
+        })
+    })
     projectButton.forEach((button) => {
         button.addEventListener('click', () => {
             document.querySelector('.body-control h1').textContent = storage.getProjects()[button.id].title;
@@ -342,5 +373,34 @@ const renderDefaults = (() => {
     const doneProjectCounter = document.querySelector('#done span');
     const content = document.querySelector('.body-content');
 
-    
+    inboxProjectCounter.textContent = storage.getInbox()[0].length;
+    todayProjectCounter.textContent = storage.getToday()[0].length;
+    doneProjectCounter.textContent = storage.getDone()[0].length;
+
+    inboxProject.addEventListener('click', () => {
+        content.innerHTML = '';
+        document.querySelector('.body-control h1').textContent = 'Inbox';
+        for (let i in storage.getInbox()[0]) {
+            const loc = storage.getInbox()[0][i];
+            renderTasks.renderTask(loc.title, loc.description, loc.dueDate, loc.priority, i);
+        }
+    })
+
+    todayProject.addEventListener('click', () => {
+        content.innerHTML = '';
+        document.querySelector('.body-control h1').textContent = 'Today';
+        for (let i in storage.getToday()[0]) {
+            const loc = storage.getToday()[0][i];
+            renderTasks.renderTask(loc.title, loc.description, loc.dueDate, loc.priority, i);
+        }
+    })
+
+    doneProject.addEventListener('click', () => {
+        content.innerHTML = '';
+        document.querySelector('.body-control h1').textContent = 'Done';
+        for (let i in storage.getDone()[0]) {
+            const loc = storage.getDone()[0][i];
+            renderTasks.renderTask(loc.title, loc.description, loc.dueDate, loc.priority, i);
+        }
+    })
 })();
