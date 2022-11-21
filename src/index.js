@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { storage } from './js/storage';
 import { tasks } from './js/tasks';
 import { projects } from './js/projects';
+import { defaults } from './js/defaults';
 
 
 // Hide side menu
@@ -240,6 +241,8 @@ const renderTasks = (() => {
             return tasksLocation = button.id;
         })
     })
+
+    return { renderTask };
 })();
 
 const renderNewTaskInput = (() => {
@@ -330,13 +333,14 @@ const renderNewTaskInput = (() => {
     })
 })();
 
-const defaults = (() => {
+const renderDefaults = (() => {
     const inboxProject = document.querySelector('#inbox');
     const todayProject = document.querySelector('#today');
     const doneProject = document.querySelector('#done');
     const inboxProjectCounter = document.querySelector('#inbox span')
     const todayProjectCounter = document.querySelector('#today span');
     const doneProjectCounter = document.querySelector('#done span');
+    const content = document.querySelector('.body-content');
 
     
 })();

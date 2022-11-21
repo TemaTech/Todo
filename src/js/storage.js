@@ -95,6 +95,7 @@ const storage = (() => {
         getProjects,
         saveInbox,
         getInbox,
+        isInboxEmpty,
         todayStorage,
         saveToday,
         getToday,
