@@ -3,7 +3,6 @@ import { format } from 'date-fns';
 import { storage } from './js/storage';
 import { tasks } from './js/tasks';
 import { projects } from './js/projects';
-import { defaults } from './js/defaults';
 
 
 // Hide side menu
@@ -131,17 +130,22 @@ export const renderProjects = (() => {
         renderProject(storage.getProjects()[i].title, storage.getProjects()[i].color, i, storage.getProjects()[i].tasks.length);
     }
 
-    return { renderProject };
+    function renderPrjs() {
+        container.innerHTML = '';
+        for(let i in storage.getProjects()) {
+            renderProject(storage.getProjects()[i].title, storage.getProjects()[i].color, i, storage.getProjects()[i].tasks.length);
+        }
+    }
+
+    return { renderProject, renderPrjs };
 })();
 
 // Render tasks
 const renderTasks = (() => {
     const container = document.querySelector('.body-content');
-    let tasksLocation;
 
-    function renderTask(title, description, dueDate, priority, id) {
+    function renderTask(title, description, dueDate, priority, location, index) {
         const task = document.createElement('div');
-        task.setAttribute('id', id);
         task.classList = 'task';
 
         const displayPriority = document.createElement('div');
@@ -161,57 +165,14 @@ const renderTasks = (() => {
         doneButton.setAttribute('type', 'checkbox');
         doneButton.style.height = '20px';
         doneButton.style.width = '20px';
-        doneButton.addEventListener('change', () => {
-            console.log(tasksLocation)
-            if (tasksLocation == 'inbox') {
-                storage.inboxStorage[id].isDone = doneButton.checked;
-                storage.saveInbox();
-            } else if (tasksLocation == 'today') {
-                storage.todayStorage[id].isDone = doneButton.checked;
-                storage.saveToday();
-            } else if (tasksLocation == 'done') {
-                storage.doneStorage[id].isDone = doneButton.checked;
-                storage.saveDone();
-                console.log(storage.doneStorage[id].isDone)
-            } else {
-            storage.projectsStorage[tasksLocation].tasks[id].isDone = doneButton.checked;
-            storage.saveProjects();
-            console.log(storage.projectsStorage[tasksLocation].tasks[id].isDone);
-            }
-        })
         task.appendChild(doneButton);
 
         const displayTitle = document.createElement('h1');
         displayTitle.textContent = title;
-        displayTitle.addEventListener('click', () => {
-            displayTitle.classList.toggle('title-lineThrough');
-            if (displayTitle.className == 'title-lineThrough') {
-                doneButton.checked = true;
-            } else {
-                doneButton.checked = false;
-            }
-            if (tasksLocation == 'inbox') {
-                    storage.inboxStorage[id].isDone = doneButton.checked;
-                    storage.saveInbox();
-            } else if (tasksLocation == 'today') {
-                    storage.todayStorage[id].isDone = doneButton.checked;
-                    storage.saveToday();
-            } else if (tasksLocation == 'done') {
-                    storage.doneStorage[id].isDone = doneButton.checked;
-                    storage.saveDone();
-            } else {
-                storage.projectsStorage[tasksLocation].tasks[id].isDone = doneButton.checked;
-                storage.saveProjects();
-            }
-        })
         displayTitle.addEventListener('mouseover', () => {
             displayTitle.style.cursor = 'pointer';
         })
         task.appendChild(displayTitle);
-
-        doneButton.addEventListener('change', () => {
-            displayTitle.classList.toggle('title-lineThrough');
-        })
 
         const displayDescription = document.createElement('p');
         displayDescription.addEventListener('mouseover', () => {
@@ -246,32 +207,160 @@ const renderTasks = (() => {
         removeButton.classList = 'remove-task-button';
         const trashCan = document.createElement('img');
         removeButton.appendChild(trashCan);
-        removeButton.addEventListener('click', () => {
-            tasks.removeTask(tasksLocation, id);
-        })
         task.appendChild(removeButton);
 
         container.appendChild(task);
+
+        doneButton.addEventListener('change', () => {
+            displayTitle.classList.toggle('title-lineThrough');
+            if (storage.projectsStorage[location].tasks[index].isDone === false) {
+                storage.projectsStorage[location].tasks[index].isDone = true;
+                storage.saveProjects();
+            } else {
+                storage.projectsStorage[location].tasks[index].isDone = false;
+                storage.saveProjects();
+            }
+            updateDoneCounter();
+        })
+
+        displayTitle.addEventListener('click', () => {
+            displayTitle.classList.toggle('title-lineThrough');
+            if (storage.projectsStorage[location].tasks[index].isDone === false) {
+                storage.projectsStorage[location].tasks[index].isDone = true;
+                storage.saveProjects();
+                doneButton.checked = true;
+            } else {
+                storage.projectsStorage[location].tasks[index].isDone = false;
+                storage.saveProjects();
+                doneButton.checked = false;
+            }
+            updateDoneCounter();
+        })
+
+        if (storage.projectsStorage[location].tasks[index].isDone === true) {
+            displayTitle.classList.toggle('title-lineThrough');
+            doneButton.checked = true;
+        } else {
+            displayTitle.classList.remove('title-lineThrough');
+            doneButton.checked = false;
+        }
+    
+        removeButton.addEventListener('click', () => {
+            tasks.removeTask(location, index);
+            updateInboxCounter();
+            updateDoneCounter();
+            updateTodayCounter();
+            renderProjects.renderPrjs();
+            window.location.reload();
+        })
     }
 
     const projectButton = document.querySelectorAll('.side-projects .project');
-    const defTasks = document.querySelectorAll('.side-def-tasks .side-def');
-    defTasks.forEach((button) => {
-        button.addEventListener('click', () => {
-            return tasksLocation = button.id;
-        })
-    })
     projectButton.forEach((button) => {
         button.addEventListener('click', () => {
             document.querySelector('.body-control h1').textContent = storage.getProjects()[button.id].title;
             container.innerHTML = '';
             const loc = storage.getProjects()[button.id].tasks;
             for(let i in loc) {
-                renderTask(loc[i].title, loc[i].description, loc[i].dueDate, loc[i].priority, i);
+                renderTask(loc[i].title, loc[i].description, loc[i].dueDate, loc[i].priority, loc[i].projectLocation, loc.indexOf(loc[i]));
             }
-            return tasksLocation = button.id;
         })
     })
+
+        const inboxProject = document.querySelector('#inbox');
+        const todayProject = document.querySelector('#today');
+        const doneProject = document.querySelector('#done');
+        const inboxProjectCounter = document.querySelector('#inbox span')
+        const todayProjectCounter = document.querySelector('#today span');
+        const doneProjectCounter = document.querySelector('#done span');
+    
+        // Updates inbox counter
+        function updateInboxCounter() {
+            let count = 0;
+            for(let i in storage.getProjects()) {
+                count += storage.getProjects()[i].tasks.length;
+            }
+            inboxProjectCounter.textContent = count;
+        }
+        updateInboxCounter();
+    
+        // Renders inbox
+        function renderInbox() {
+            document.querySelector('.body-content').innerHTML = '';
+            document.querySelector('.body-control h1').textContent = 'Inbox';
+            let array = [];
+            for(let i in storage.getProjects()) {
+                array.push(storage.getProjects()[i].tasks);
+            }
+            for (let projects in array) {
+                for (let i in array[projects]) {
+                    renderTasks.renderTask(array[projects][i].title, array[projects][i].description, array[projects][i].dueDate, array[projects][i].priority, array[projects][i].projectLocation, array[projects].indexOf(array[projects][i]));
+                }
+            }
+        }
+        inboxProject.addEventListener('click', () => {
+            renderInbox();
+        })
+    
+        // Updates today project counter
+        function updateTodayCounter() {
+            let count = 0;
+            for (let i in storage.getProjects()) {
+                count += storage.getProjects()[i].tasks.filter(task => task.dueDate == format(new Date(), 'yyyy-M-dd')).length;
+            }
+            todayProjectCounter.textContent = count;
+        }
+        updateTodayCounter();
+    
+        // Renders today project
+        function renderToday() {
+            document.querySelector('.body-content').innerHTML = '';
+            document.querySelector('.body-control h1').textContent = "Today";
+            let array = [];
+            for(let i in storage.projectsStorage) {
+                array.push(storage.projectsStorage[i].tasks.filter(task => task.dueDate == format(new Date(), 'yyyy-M-dd')));
+            }
+            for (let projects in array) {
+                for (let i in array[projects]) {
+                    renderTasks.renderTask(array[projects][i].title, array[projects][i].description, array[projects][i].dueDate, array[projects][i].priority, array[projects][i].projectLocation, array[projects].indexOf(array[projects][i]));
+                }
+            }
+        }
+        todayProject.addEventListener('click', () => {
+            renderToday();
+        })
+    
+        // Updates done projects counter
+        function updateDoneCounter() {
+            let count = 0;
+            for (let i in storage.getProjects()) {
+                count += storage.getProjects()[i].tasks.filter(task => task.isDone == true).length;
+            }
+            doneProjectCounter.textContent = count;
+        }
+        updateDoneCounter();
+    
+        // Renders done project
+        function renderDone() {
+            document.querySelector('.body-content').innerHTML = '';
+            document.querySelector('.body-control h1').textContent = "Done";
+            let array = [];
+            for (let i in storage.projectsStorage) {
+                array.push(storage.projectsStorage[i].tasks.filter(task => task.isDone == true))
+            }
+            for (let projects in array) {
+                for (let i in array[projects]) {
+                    renderTasks.renderTask(array[projects][i].title, array[projects][i].description, array[projects][i].dueDate, array[projects][i].priority, array[projects][i].projectLocation, array[projects].indexOf(array[projects][i]));
+                }
+            }
+        }
+        doneProject.addEventListener('click', () => {
+            renderDone();
+        })
+
+        window.onload = () => {
+            renderInbox();
+        }
 
     return { renderTask };
 })();
@@ -361,46 +450,5 @@ const renderNewTaskInput = (() => {
 
     button.addEventListener('click', () => {
         render();
-    })
-})();
-
-const renderDefaults = (() => {
-    const inboxProject = document.querySelector('#inbox');
-    const todayProject = document.querySelector('#today');
-    const doneProject = document.querySelector('#done');
-    const inboxProjectCounter = document.querySelector('#inbox span')
-    const todayProjectCounter = document.querySelector('#today span');
-    const doneProjectCounter = document.querySelector('#done span');
-    const content = document.querySelector('.body-content');
-
-    inboxProjectCounter.textContent = storage.getInbox()[0].length;
-    todayProjectCounter.textContent = storage.getToday()[0].length;
-    doneProjectCounter.textContent = storage.getDone()[0].length;
-
-    inboxProject.addEventListener('click', () => {
-        content.innerHTML = '';
-        document.querySelector('.body-control h1').textContent = 'Inbox';
-        for (let i in storage.getInbox()[0]) {
-            const loc = storage.getInbox()[0][i];
-            renderTasks.renderTask(loc.title, loc.description, loc.dueDate, loc.priority, i);
-        }
-    })
-
-    todayProject.addEventListener('click', () => {
-        content.innerHTML = '';
-        document.querySelector('.body-control h1').textContent = 'Today';
-        for (let i in storage.getToday()[0]) {
-            const loc = storage.getToday()[0][i];
-            renderTasks.renderTask(loc.title, loc.description, loc.dueDate, loc.priority, i);
-        }
-    })
-
-    doneProject.addEventListener('click', () => {
-        content.innerHTML = '';
-        document.querySelector('.body-control h1').textContent = 'Done';
-        for (let i in storage.getDone()[0]) {
-            const loc = storage.getDone()[0][i];
-            renderTasks.renderTask(loc.title, loc.description, loc.dueDate, loc.priority, i);
-        }
     })
 })();

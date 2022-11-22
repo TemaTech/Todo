@@ -201,6 +201,8 @@ body {
 
 .project button img {
   content: url("/src/img/square-minus-regular.svg");
+  height: 15px;
+  width: 15px;
 }
 
 .project button:hover {
@@ -524,7 +526,6 @@ button.remove-task-button:hover {
   color: #393939;
   border-radius: 5px;
   width: 70px;
-  place-self: end;
 }
 
 .add-project-popUp form button:first-of-type:hover {
