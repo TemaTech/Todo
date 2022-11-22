@@ -61,6 +61,26 @@ body {
     align-items: center;
 }
 
+.nav-right button img {
+    content: url("/src/img/bars-solid\ \(1\).svg");
+}
+
+#inbox img {
+    content: url("/src/img/inbox.svg");
+}
+
+#today img {
+    content: url("/src/img/calendar-today.svg");
+}
+
+#done img {
+    content: url("/src/img/calendar-check.svg");
+}
+
+.add-project button img {
+    content: url("/src/img/plus-solid.svg");
+}
+
 .nav-right button:hover {
     background: #ffffff35;
     cursor: pointer;
